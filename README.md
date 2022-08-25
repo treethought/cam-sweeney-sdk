@@ -52,21 +52,21 @@ func main() {
     client := NewOneAPIClient(apiKey)
 
     // List all available books
-	books, err := client.Books().List()
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(books)
+    books, err := client.Books().List()
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println(books)
 
     // get a specific book
     book, err := client.Books().Get("5cf5805fb53e011a64671582")
     if err != nil {
-		log.Fatal(err)
+        log.Fatal(err)
     }
     // get all chapters of a book
     book, err := client.Books().GetChapters("5cf5805fb53e011a64671582")
     if err != nil {
-		log.Fatal(err)
+        log.Fatal(err)
     }
 
 }
