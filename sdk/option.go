@@ -21,6 +21,19 @@ func setQueryParam(req *http.Request, key string, val string) {
 	req.URL.RawQuery = values.Encode()
 }
 
+func setNegateQueryParam(req *http.Request, key string, negateVal string) {
+	query := req.URL.RawQuery
+	negate := fmt.Sprintf("%s!=%s", key, negateVal)
+
+	if len(query) == 0 {
+		query = fmt.Sprintf("%s", negate)
+	} else {
+		query = fmt.Sprintf("%s&%s", query, negate)
+	}
+	req.URL.RawQuery = query
+
+}
+
 func withQuery(key string, val string) RequestOption {
 	return func(req *http.Request) {
 		setQueryParam(req, key, val)
@@ -68,11 +81,22 @@ func WithSort(field string, dir string) RequestOption {
 }
 
 // WithAPIKey causes an Authorization header to be applied to access authenticated resources
+//
 // Note that if an apiKey is provided to client creation, this is not needed and will be applied automatically.
 // This option is useful for setting a new apiKey or turning a read-only client into an authenticated client
 func WithAPIKey(apiKey string) RequestOption {
 	return func(req *http.Request) {
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", apiKey))
+	}
+}
 
+func WithFilterMatch(field string, val string) RequestOption {
+	return func(req *http.Request) {
+		setQueryParam(req, field, val)
+	}
+}
+func WithFilterNegate(field string, val string) RequestOption {
+	return func(req *http.Request) {
+		setNegateQueryParam(req, field, val)
 	}
 }

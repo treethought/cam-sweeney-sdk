@@ -109,6 +109,9 @@ func TestOneAPIClient_doRequest(t *testing.T) {
 		{"with sort asc", args{path: "/book", opts: []RequestOption{WithSort("name", "asc")}}, false, "/book?sort=name:asc", nil},
 		{"with sort dsc", args{path: "/book", opts: []RequestOption{WithSort("character", "dsc")}}, false, "/book?sort=character:dsc", nil},
 		{"with apikey", args{path: "/book", opts: []RequestOption{WithAPIKey("123")}}, false, "/book", map[string]string{"Authorization": "Bearer 123"}},
+		{"with match", args{path: "/character", opts: []RequestOption{WithFilterMatch("name", "frodo")}}, false, "/character?name=frodo", nil},
+		{"with match negate", args{path: "/character", opts: []RequestOption{WithFilterNegate("name", "frodo")}}, false, "/character?name!=frodo", nil},
+		{"with match negate and multiple", args{path: "/character", opts: []RequestOption{WithLimit(2), WithFilterNegate("name", "frodo")}}, false, "/character?limit=2&name!=frodo", nil},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
