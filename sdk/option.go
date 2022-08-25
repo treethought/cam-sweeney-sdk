@@ -51,3 +51,10 @@ func WithSort(field string, dir string) RequestOption {
 		req.URL.Query().Add("sort", fmt.Sprint(val))
 	}
 }
+
+func WithAPIKey(apiKey string) RequestOption {
+	return func(req *http.Request) {
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", apiKey))
+
+	}
+}
