@@ -34,8 +34,8 @@ type ClientConfig struct {
 	PersistentOptions []RequestOption
 }
 
-// NewReadOnly creates a new client without authorization
-func NewReadOnly() OneAPIClient {
+// NewUnAuthenticated creates a new client without authorization
+func NewUnAuthenticated() OneAPIClient {
 	return OneAPIClient{
 		client:         http.DefaultClient,
 		baseURL:        DEFAULT_BASE_URL,
@@ -57,7 +57,7 @@ func New(apiKey string) OneAPIClient {
 func NewWithConfig(config ClientConfig) OneAPIClient {
 	var c OneAPIClient
 	if config.ApiKey == "" {
-		c = NewReadOnly()
+		c = NewUnAuthenticated()
 	} else {
 		c = New(config.ApiKey)
 	}

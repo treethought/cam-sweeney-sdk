@@ -41,7 +41,7 @@ func TestNewWithConfig(t *testing.T) {
 }
 
 func TestOneAPIClient_buildEndpoint(t *testing.T) {
-	client := NewReadOnly()
+	client := NewUnAuthenticated()
 	type args struct {
 		path string
 	}
