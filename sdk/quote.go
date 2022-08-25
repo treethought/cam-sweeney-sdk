@@ -20,9 +20,11 @@ type QuotesClient struct {
 }
 
 // List returns a list of all quotes
-func (q QuotesClient) List() ([]Quote, error) {
+func (q QuotesClient) List(opts ...RequestOption) ([]Quote, error) {
 	resp := quoteResponse{}
-	err := q.c.doRequestInto("/quote", &resp)
+
+	opts = q.c.appendOptsToAuth(opts...)
+	err := q.c.doRequestInto("/quote", &resp, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -30,10 +32,12 @@ func (q QuotesClient) List() ([]Quote, error) {
 }
 
 // Get returns a quote by ID
-func (q QuotesClient) Get(id string) (Quote, error) {
+func (q QuotesClient) Get(id string, opts ...RequestOption) (Quote, error) {
 	path := fmt.Sprintf("/quote/%s", id)
 	resp := quoteResponse{}
-	err := q.c.doRequestInto(path, &resp)
+
+	opts = q.c.appendOptsToAuth(opts...)
+	err := q.c.doRequestInto(path, &resp, opts...)
 	if err != nil {
 		return Quote{}, err
 	}

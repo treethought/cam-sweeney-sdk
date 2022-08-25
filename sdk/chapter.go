@@ -20,9 +20,10 @@ type ChapterClient struct {
 }
 
 // List provides all chapters across all books
-func (ch ChapterClient) List() ([]Chapter, error) {
+func (ch ChapterClient) List(opts ...RequestOption) ([]Chapter, error) {
 	resp := chapterResponse{}
-	err := ch.c.doRequestInto("/chapter", &resp, WithAPIKey(ch.c.apiKey))
+	opts = ch.c.appendOptsToAuth(opts...)
+	err := ch.c.doRequestInto("/chapter", &resp, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -30,10 +31,12 @@ func (ch ChapterClient) List() ([]Chapter, error) {
 }
 
 // Get returns a single chapter by ID
-func (ch ChapterClient) Get(id string) (Chapter, error) {
+func (ch ChapterClient) Get(id string, opts ...RequestOption) (Chapter, error) {
 	path := fmt.Sprintf("/chapter/%s", id)
 	resp := chapterResponse{}
-	err := ch.c.doRequestInto(path, &resp, WithAPIKey(ch.c.apiKey))
+
+	opts = ch.c.appendOptsToAuth(opts...)
+	err := ch.c.doRequestInto(path, &resp, opts...)
 	if err != nil {
 		return Chapter{}, err
 	}

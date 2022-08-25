@@ -18,9 +18,9 @@ type BooksClient struct {
 }
 
 // List returns a list of all "Lord of the Rings" books
-func (b BooksClient) List() ([]Book, error) {
+func (b BooksClient) List(opts ...RequestOption) ([]Book, error) {
 	resp := booksResponse{}
-	err := b.c.doRequestInto("/book", &resp)
+	err := b.c.doRequestInto("/book", &resp, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -28,10 +28,10 @@ func (b BooksClient) List() ([]Book, error) {
 }
 
 // Get a book by it's ID
-func (b BooksClient) Get(id string) (Book, error) {
+func (b BooksClient) Get(id string, opts ...RequestOption) (Book, error) {
 	path := fmt.Sprintf("/book/%s", id)
 	resp := booksResponse{}
-	err := b.c.doRequestInto(path, &resp)
+	err := b.c.doRequestInto(path, &resp, opts...)
 	if err != nil {
 		return Book{}, err
 	}
@@ -39,10 +39,10 @@ func (b BooksClient) Get(id string) (Book, error) {
 }
 
 // GetChapters returns all chapters of a specific book
-func (b BooksClient) GetChapters(bookId string) ([]Chapter, error) {
+func (b BooksClient) GetChapters(bookId string, opts ...RequestOption) ([]Chapter, error) {
 	path := fmt.Sprintf("/book/%s/chapter", bookId)
 	resp := chapterResponse{}
-	err := b.c.doRequestInto(path, &resp)
+	err := b.c.doRequestInto(path, &resp, opts...)
 	if err != nil {
 		return nil, err
 	}

@@ -27,9 +27,11 @@ type MoviesClient struct {
 }
 
 // List returns a list of all movies
-func (m MoviesClient) List() ([]Movie, error) {
+func (m MoviesClient) List(opts ...RequestOption) ([]Movie, error) {
 	resp := moviesResponse{}
-	err := m.c.doRequestInto("/movie", &resp, WithAPIKey(m.c.apiKey))
+
+	opts = m.c.appendOptsToAuth(opts...)
+	err := m.c.doRequestInto("/movie", &resp, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -37,10 +39,12 @@ func (m MoviesClient) List() ([]Movie, error) {
 }
 
 // Get returns a single movie by ID
-func (m MoviesClient) Get(id string) (Movie, error) {
+func (m MoviesClient) Get(id string, opts ...RequestOption) (Movie, error) {
 	path := fmt.Sprintf("/movie/%s", id)
 	resp := moviesResponse{}
-	err := m.c.doRequestInto(path, &resp, WithAPIKey(m.c.apiKey))
+
+	opts = m.c.appendOptsToAuth(opts...)
+	err := m.c.doRequestInto(path, &resp, opts...)
 	if err != nil {
 		return Movie{}, err
 	}
@@ -48,10 +52,12 @@ func (m MoviesClient) Get(id string) (Movie, error) {
 }
 
 // GetQuotes returns all quotes of a single movie
-func (m MoviesClient) GetQuotes(id string) ([]Quote, error) {
+func (m MoviesClient) GetQuotes(id string, opts ...RequestOption) ([]Quote, error) {
 	path := fmt.Sprintf("/movie/%s/quote", id)
 	resp := quoteResponse{}
-	err := m.c.doRequestInto(path, &resp, WithAPIKey(m.c.apiKey))
+
+	opts = m.c.appendOptsToAuth(opts...)
+	err := m.c.doRequestInto(path, &resp, opts...)
 	if err != nil {
 		return nil, err
 	}

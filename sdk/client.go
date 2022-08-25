@@ -69,6 +69,12 @@ func (c OneAPIClient) buildEndpoint(path string) string {
 
 }
 
+func (c OneAPIClient) appendOptsToAuth(opts ...RequestOption) []RequestOption {
+	auth := []RequestOption{WithAPIKey(c.apiKey)}
+	return append(auth, opts...)
+
+}
+
 func (c OneAPIClient) doRequest(path string, opts ...RequestOption) (*http.Response, error) {
 	endpoint := c.buildEndpoint(path)
 

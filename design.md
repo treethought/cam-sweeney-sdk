@@ -17,7 +17,7 @@ The primary goals of the SDK are to provide:
 
 The SDK is modular in nature. The base client provides only the core functionality of making requests to the API, as well as applying any type of query parameters and authorization headers. Additionally, the client is meant to be configurable, allowing users to provide their own http.Client configuration and modifying API keys and API URL.
 
-To provide methods for interacting with the various API resources, the client provides convenient methods to resource specific "clients" which provide their own respective methods for making requests to the resource-specific endpoints.
+To provide methods for interacting with the various API resources, the client includes convenient methods to resource specific "clients" which provide their own respective methods for making requests to the resource-specific endpoints.
 You can think of these resource-specific "clients" as representing a namespace within the API.
 
 While these namespaces are named "clients", they really utilize the base client for making http requests rather than doing so themselves. Additionally, they utilize the base client's ability to deserialize the API response payloads into the appropriate API structs. This allows the user to receive known types from client methods, so they can perform operations on the data without needing to examine the response and determine how to unmarshal into a usable type.

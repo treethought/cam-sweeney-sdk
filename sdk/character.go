@@ -30,9 +30,11 @@ type CharactersClient struct {
 }
 
 // List returns a list of all characters
-func (ch CharactersClient) List() ([]Character, error) {
+func (ch CharactersClient) List(opts ...RequestOption) ([]Character, error) {
 	resp := characterResponse{}
-	err := ch.c.doRequestInto("/character", &resp, WithAPIKey(ch.c.apiKey))
+
+	opts = ch.c.appendOptsToAuth(opts...)
+	err := ch.c.doRequestInto("/character", &resp, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -40,10 +42,12 @@ func (ch CharactersClient) List() ([]Character, error) {
 }
 
 // Get returns a single Character by ID
-func (ch CharactersClient) Get(id string) (Character, error) {
+func (ch CharactersClient) Get(id string, opts ...RequestOption) (Character, error) {
 	path := fmt.Sprintf("/character/%s", id)
 	resp := characterResponse{}
-	err := ch.c.doRequestInto(path, &resp, WithAPIKey(ch.c.apiKey))
+
+	opts = ch.c.appendOptsToAuth(opts...)
+	err := ch.c.doRequestInto(path, &resp, opts...)
 	if err != nil {
 		return Character{}, err
 	}
@@ -51,10 +55,12 @@ func (ch CharactersClient) Get(id string) (Character, error) {
 }
 
 // GetQuotes returns a all quotes of a single Character by ID
-func (ch CharactersClient) GetQuotes(id string) ([]Quote, error) {
+func (ch CharactersClient) GetQuotes(id string, opts ...RequestOption) ([]Quote, error) {
 	path := fmt.Sprintf("/character/%s/quote", id)
 	resp := quoteResponse{}
-	err := ch.c.doRequestInto(path, &resp, WithAPIKey(ch.c.apiKey))
+
+	opts = ch.c.appendOptsToAuth(opts...)
+	err := ch.c.doRequestInto(path, &resp, opts...)
 	if err != nil {
 		return nil, err
 	}
