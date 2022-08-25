@@ -144,7 +144,7 @@ func TestOneAPIClient_doRequestInto(t *testing.T) {
 
 	apiErr := APIError{Success: false, Message: "sample error message"}
 
-	wantErrResp := SDKError{message: "API Error", endpoint: "/error", apiError: apiErr}
+	wantErrResp := SDKError{message: "API Error", endpoint: "/error", err: apiErr}
 	wantBookResp := booksResponse{Docs: []Book{{ID: "123", Name: "Sample Book"}}}
 	wantMovieResp := moviesResponse{Docs: []Movie{{ID: "123", Name: "Sample Movie", RuntimeInMinutes: 122}}}
 	wantChapterResp := chapterResponse{Docs: []Chapter{{ID: "123", Name: "Sample Chapter", Book: "smaple book"}}}

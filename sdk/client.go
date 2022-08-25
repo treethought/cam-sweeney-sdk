@@ -80,17 +80,13 @@ func (c OneAPIClient) doRequest(path string, opts ...RequestOption) (*http.Respo
 		f(req)
 	}
 
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return resp, err
-	}
-	return resp, err
+	return c.client.Do(req)
 }
 
 func (c OneAPIClient) doRequestInto(path string, v interface{}, opts ...RequestOption) error {
 	resp, err := c.doRequest(path, opts...)
 	if err != nil {
-		return err
+		return SDKError{"HTTP Error", path, err}
 	}
 
 	var bodyCopy bytes.Buffer
@@ -105,7 +101,7 @@ func (c OneAPIClient) doRequestInto(path string, v interface{}, opts ...RequestO
 
 	data, err := ioutil.ReadAll(r)
 	if err != nil {
-		return err
+		return SDKError{"Error reading response", path, err}
 	}
 
 	// check for error
@@ -116,7 +112,7 @@ func (c OneAPIClient) doRequestInto(path string, v interface{}, opts ...RequestO
 	// now unmarshal into provided struct
 	err = json.Unmarshal(bodyCopy.Bytes(), v)
 	if err != nil {
-		return err
+		return SDKError{"Deserialization Error", path, err}
 	}
 	return nil
 }

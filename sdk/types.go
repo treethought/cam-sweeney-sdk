@@ -20,7 +20,7 @@ type APIError struct {
 type SDKError struct {
 	message  string
 	endpoint string
-	apiError APIError
+	err      error
 }
 
 func (e APIError) Error() string {
@@ -28,5 +28,5 @@ func (e APIError) Error() string {
 }
 
 func (e SDKError) Error() string {
-	return fmt.Sprintf("%s %s: %v", e.message, e.endpoint, e.apiError)
+	return fmt.Sprintf("%s %s: %v", e.message, e.endpoint, e.err)
 }
