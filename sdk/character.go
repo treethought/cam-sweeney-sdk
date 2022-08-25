@@ -1,6 +1,9 @@
 package sdk
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type characterResponse struct {
 	paginatedResponse
@@ -45,4 +48,18 @@ func (ch CharactersClient) Get(id string) (Character, error) {
 		return Character{}, err
 	}
 	return resp.Docs[0], err
+}
+
+// GetQuotes returns a all quotes of a single Character by ID
+func (ch CharactersClient) GetQuotes(id string) ([]Quote, error) {
+	path := fmt.Sprintf("/character/%s/quote", id)
+	resp := quoteResponse{}
+	err := ch.c.doRequestInto(path, &resp, WithAPIKey(ch.c.apiKey))
+	if err != nil {
+		return nil, err
+	}
+	if len(resp.Docs) == 0 {
+		return nil, errors.New("no quotes available")
+	}
+	return resp.Docs, err
 }
