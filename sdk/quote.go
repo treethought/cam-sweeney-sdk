@@ -7,17 +7,19 @@ type quoteResponse struct {
 	Docs []Quote
 }
 
+// Quote represents a quote spoken by a character
 type Quote struct {
 	ID        string `json:"_id,omitempty"`
 	Character string
 	Dialog    string
 }
 
+// QuotesClientt provides methods for interacting with quote resources
 type QuotesClient struct {
 	c OneAPIClient
 }
 
-// ListBooks returns a list of all "Lord of the Rings" books
+// List returns a list of all quotes
 func (q QuotesClient) List() ([]Quote, error) {
 	resp := quoteResponse{}
 	err := q.c.doRequestInto("/quote", &resp)
@@ -27,7 +29,7 @@ func (q QuotesClient) List() ([]Quote, error) {
 	return resp.Docs, err
 }
 
-// Get a book by it's ID
+// Get returns a quote by ID
 func (q QuotesClient) Get(id string) (Quote, error) {
 	path := fmt.Sprintf("/quote/%s", id)
 	resp := quoteResponse{}

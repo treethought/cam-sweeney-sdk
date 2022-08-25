@@ -10,11 +10,13 @@ type paginatedResponse struct {
 	Pages  int
 }
 
+// APIError represents an error message provided by the API
 type APIError struct {
 	Success bool
 	Message string
 }
 
+// SDKError represents an error when interacting with the API or SDK and provided details of any underlying APIError
 type SDKError struct {
 	message  string
 	endpoint string

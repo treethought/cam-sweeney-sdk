@@ -3,23 +3,21 @@ package sdk
 import "fmt"
 
 type booksResponse struct {
-	Docs []Book
+	Docs []Book `json:"docs,omitempty"`
 }
 
+// Book represents a single book
 type Book struct {
 	ID   string `json:"_id,omitempty"`
 	Name string `json:"name,omitempty"`
 }
 
+// BooksClient provides methods for interacting with book resources
 type BooksClient struct {
 	c OneAPIClient
 }
 
-type BookClient struct {
-	c OneAPIClient
-}
-
-// ListBooks returns a list of all "Lord of the Rings" books
+// List returns a list of all "Lord of the Rings" books
 func (b BooksClient) List() ([]Book, error) {
 	resp := booksResponse{}
 	err := b.c.doRequestInto("/book", &resp)
@@ -40,6 +38,7 @@ func (b BooksClient) Get(id string) (Book, error) {
 	return resp.Docs[0], err
 }
 
+// GetChapters returns all chapters of a specific book
 func (b BooksClient) GetChapters(bookId string) ([]Chapter, error) {
 	path := fmt.Sprintf("/book/%s/chapter", bookId)
 	resp := chapterResponse{}

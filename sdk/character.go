@@ -7,6 +7,7 @@ type characterResponse struct {
 	Docs []Character
 }
 
+// Character represents a single character
 type Character struct {
 	ID      string `json:"_id"`
 	Birth   string `json:"birth"`
@@ -20,11 +21,12 @@ type Character struct {
 	WikiUrl string `json:"wikiUrl"`
 }
 
+// CharactersClient provides methods for interacting with character resources
 type CharactersClient struct {
 	c OneAPIClient
 }
 
-// ListBooks returns a list of all "Lord of the Rings" books
+// List returns a list of all characters
 func (ch CharactersClient) List() ([]Character, error) {
 	resp := characterResponse{}
 	err := ch.c.doRequestInto("/character", &resp, WithAPIKey(ch.c.apiKey))
@@ -34,6 +36,7 @@ func (ch CharactersClient) List() ([]Character, error) {
 	return resp.Docs, err
 }
 
+// Get returns a single Character by ID
 func (ch CharactersClient) Get(id string) (Character, error) {
 	path := fmt.Sprintf("/character/%s", id)
 	resp := characterResponse{}
