@@ -24,7 +24,7 @@ Create a client
 import (
     "fmt"
     "os"
-    "github.com/treethought/cam-sweeney-sdk"
+    "github.com/treethought/cam-sweeney-sdk/sdk"
     )
 
 func main() {
@@ -44,7 +44,7 @@ The `Books()` method provides an interface to list and get books.
 import (
     "fmt"
     "os"
-    "github.com/treethought/cam-sweeney-sdk"
+    "github.com/treethought/cam-sweeney-sdk/sdk"
     )
 
 func main() {
@@ -153,7 +153,7 @@ if err != nil {
 
 ### Quotes
 
-The `Quotes)` method provides an interface to list and get quotes.
+The `Quotes()` method provides an interface to list and get quotes.
 
 ```go
 // List all available quotes
