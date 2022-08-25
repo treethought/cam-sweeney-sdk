@@ -56,7 +56,9 @@ func NewWithConfig(config ClientConfig) OneAPIClient {
 }
 
 func (c OneAPIClient) buildEndpoint(path string) string {
-	return fmt.Sprintf("%s/%s", c.baseURL, strings.Trim(path, "/"))
+	url := fmt.Sprintf("%s/%s", c.baseURL, strings.Trim(path, "/"))
+	return strings.TrimSuffix(url, "/")
+
 }
 
 func (c OneAPIClient) doRequest(path string, opts ...RequestOption) (*http.Response, error) {
