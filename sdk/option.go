@@ -15,9 +15,15 @@ type PaginationOptions struct {
 	Offset int
 }
 
+func setQueryParam(req *http.Request, key string, val string) {
+	values := req.URL.Query()
+	values.Set(key, val)
+	req.URL.RawQuery = values.Encode()
+}
+
 func withQuery(key string, val string) RequestOption {
 	return func(req *http.Request) {
-		req.URL.Query().Add(key, val)
+		setQueryParam(req, key, val)
 	}
 }
 
@@ -33,20 +39,20 @@ func WithPage(p int) RequestOption {
 
 // WithOffset specifies an offset to be applied to pagination
 func WithOffset(offset int) RequestOption {
-	return withQuery("page", fmt.Sprint(offset))
+	return withQuery("offset", fmt.Sprint(offset))
 }
 
 // WithPagination applies pagination options to the request
 func WithPagination(opts PaginationOptions) RequestOption {
 	return func(req *http.Request) {
 		if opts.Offset > 0 {
-			req.URL.Query().Add("offset", fmt.Sprint(opts.Offset))
+			setQueryParam(req, "offset", fmt.Sprint(opts.Offset))
 		}
 		if opts.Limit > 0 {
-			req.URL.Query().Add("limit", fmt.Sprint(opts.Limit))
+			setQueryParam(req, "limit", fmt.Sprint(opts.Limit))
 		}
 		if opts.Page > 0 {
-			req.URL.Query().Add("page", fmt.Sprint(opts.Page))
+			setQueryParam(req, "page", fmt.Sprint(opts.Page))
 		}
 	}
 }
@@ -57,7 +63,7 @@ func WithPagination(opts PaginationOptions) RequestOption {
 func WithSort(field string, dir string) RequestOption {
 	return func(req *http.Request) {
 		val := fmt.Sprintf("%s:%s", field, dir)
-		req.URL.Query().Add("sort", fmt.Sprint(val))
+		setQueryParam(req, "sort", val)
 	}
 }
 

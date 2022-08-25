@@ -128,7 +128,7 @@ func TestOneAPIClient_doRequest(t *testing.T) {
 				return
 			}
 			assert.Nil(err)
-			assert.Equal(tt.args.path, got.Request.URL.Path)
+			assert.Contains(got.Request.URL.String(), tt.args.path)
 
 			for k, v := range tt.wantHeader {
 				assert.Equal(v, got.Header.Get(k))

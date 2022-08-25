@@ -9,7 +9,7 @@ type chapterResponse struct {
 
 // Chapter represents a single book chapter
 type Chapter struct {
-	ID   string `json:"id,omitempty"`
+	ID   string `json:"_id,omitempty"`
 	Name string `json:"chapterName,omitempty"`
 	Book string `json:"book,omitempty"`
 }
