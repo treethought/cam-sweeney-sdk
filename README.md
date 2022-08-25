@@ -127,8 +127,6 @@ chapter, err := client.Characters().GetQuotes("5cd99d4bde30eff6ebccfd0d")
 if err != nil {
     log.Fatal(err)
 }
-
-
 ```
 
 ### Chapters
@@ -168,6 +166,33 @@ quote, err := client.Quotes().Get("5cd96e05de30eff6ebcce7e9")
 if err != nil {
     log.Fatal(err)
 }
+
+```
+
+### Applying Request Options
+
+The client, as well as any API methods, may be configured with RequestOptions.
+These options are used to apply query params for sorting, pagination, and
+filtering. They also support setting the baseURL and authroization header.
+
+These options may be applied to the client via `sdk.NewWithConfig`, or simply
+passed to each method as needed.
+
+For example, to set a pagination limit of 3 across all API calls:
+
+```go
+
+opts := []RequestOption{WithLimit(3)}
+
+client := sdk.NewWithConfig(sdk.ClientConfig{PersistentOptions: opts})
+```
+
+Or to sort books by name
+
+```go
+client := sdk.New()
+
+client.Books().List(WithSort("name", "asc"))
 
 ```
 
