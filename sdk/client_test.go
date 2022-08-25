@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"testing"
 	"time"
 
@@ -82,7 +81,6 @@ func TestOneAPIClient_doRequest(t *testing.T) {
 		data, err := io.ReadAll(r.Body)
 		assert.Nil(err)
 		for k, v := range r.Header {
-			fmt.Println("setting ", k, v)
 			w.Header().Set(k, v[0])
 		}
 		w.Write(data)
@@ -132,8 +130,6 @@ func TestOneAPIClient_doRequest(t *testing.T) {
 			assert.Nil(err)
 			assert.Equal(tt.args.path, got.Request.URL.Path)
 
-			fmt.Println(got.Header)
-
 			for k, v := range tt.wantHeader {
 				assert.Equal(v, got.Header.Get(k))
 			}
@@ -142,3 +138,98 @@ func TestOneAPIClient_doRequest(t *testing.T) {
 	}
 }
 
+func TestOneAPIClient_doRequestInto(t *testing.T) {
+	assert := assert.New(t)
+	var resp interface{}
+
+	apiErr := APIError{Success: false, Message: "sample error message"}
+
+	wantErrResp := SDKError{message: "API Error", endpoint: "/error", apiError: apiErr}
+	wantBookResp := booksResponse{Docs: []Book{{ID: "123", Name: "Sample Book"}}}
+	wantMovieResp := moviesResponse{Docs: []Movie{{ID: "123", Name: "Sample Movie", RuntimeInMinutes: 122}}}
+	wantChapterResp := chapterResponse{Docs: []Chapter{{ID: "123", Name: "Sample Chapter", Book: "smaple book"}}}
+	wantCharacterResp := characterResponse{Docs: []Character{{ID: "123", Name: "Frodo", Height: "4 ft", Race: "Hobbit"}}}
+	wantQuoteResp := quoteResponse{Docs: []Quote{{ID: "123", Character: "Frodo", Dialog: "smaple dialog"}}}
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/error":
+			resp = apiErr
+		case "/book":
+			resp = wantBookResp
+		case "/movie":
+			resp = wantMovieResp
+		case "/chapter":
+			resp = wantChapterResp
+		case "/character":
+			resp = wantCharacterResp
+		case "/quote":
+			resp = wantQuoteResp
+		}
+		data, err := json.Marshal(resp)
+		assert.Nil(err)
+		w.WriteHeader(http.StatusOK)
+		w.Write(data)
+		w.Header().Set("Content-Type", "application/json")
+
+	}))
+	defer server.Close()
+
+	client := NewWithConfig(ClientConfig{BaseURL: server.URL})
+
+	type args struct {
+		path string
+		v    interface{}
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wantErr  bool
+		wantResp interface{}
+	}{
+		{"error message", args{path: "/error", v: make(map[string]interface{})}, true, wantErrResp},
+		{"book resp", args{path: "/book", v: booksResponse{}}, false, wantBookResp},
+		{"movie resp", args{path: "/movie", v: moviesResponse{}}, false, wantMovieResp},
+		{"chapter resp", args{path: "/chapter", v: chapterResponse{}}, false, wantChapterResp},
+		{"character resp", args{path: "/character", v: characterResponse{}}, false, wantCharacterResp},
+		{"quote resp", args{path: "/quote", v: quoteResponse{}}, false, wantQuoteResp},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			var err error
+			switch tt.args.path {
+			case "/error":
+				err = client.doRequestInto(tt.args.path, make(map[string]string))
+				assert.NotNil(err)
+				assert.ErrorIs(err, wantErrResp)
+			case "/book":
+				v := booksResponse{}
+				err = client.doRequestInto(tt.args.path, &v)
+				assert.Nil(err)
+				assert.Equal(wantBookResp, v)
+			case "/movie":
+				v := moviesResponse{}
+				err = client.doRequestInto(tt.args.path, &v)
+				assert.Nil(err)
+				assert.Equal(wantMovieResp, v)
+			case "/chapter":
+				v := chapterResponse{}
+				err = client.doRequestInto(tt.args.path, &v)
+				assert.Nil(err)
+				assert.Equal(wantChapterResp, v)
+			case "/character":
+				v := characterResponse{}
+				err = client.doRequestInto(tt.args.path, &v)
+				assert.Nil(err)
+				assert.Equal(wantCharacterResp, v)
+			case "/quote":
+				v := quoteResponse{}
+				err = client.doRequestInto(tt.args.path, &v)
+				assert.Nil(err)
+				assert.Equal(wantQuoteResp, v)
+			}
+
+		})
+	}
+}
