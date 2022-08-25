@@ -14,9 +14,10 @@ const DEFAULT_BASE_URL = "https://the-one-api.dev/v2"
 
 // OneAPIClient is the sdk's interface to The One API
 type OneAPIClient struct {
-	client  *http.Client
-	apiKey  string
-	baseURL string
+	client         *http.Client
+	apiKey         string
+	baseURL        string
+	persistentOpts []RequestOption
 }
 
 // ClientConfig provides config to override client behavior
@@ -27,22 +28,28 @@ type ClientConfig struct {
 	BaseURL string
 	// APIKey required for authenticated endpoints
 	ApiKey string
+
+	// Request Options to apply to all requests
+	// note any options provided to methods will overwrite any duplicates
+	PersistentOptions []RequestOption
 }
 
 // NewReadOnly creates a new client without authorization
 func NewReadOnly() OneAPIClient {
 	return OneAPIClient{
-		client:  http.DefaultClient,
-		baseURL: DEFAULT_BASE_URL,
+		client:         http.DefaultClient,
+		baseURL:        DEFAULT_BASE_URL,
+		persistentOpts: []RequestOption{},
 	}
 }
 
 // NewReadOnly creates a client using provided apiKey for authorization
 func New(apiKey string) OneAPIClient {
 	return OneAPIClient{
-		client:  http.DefaultClient,
-		baseURL: DEFAULT_BASE_URL,
-		apiKey:  apiKey,
+		client:         http.DefaultClient,
+		baseURL:        DEFAULT_BASE_URL,
+		apiKey:         apiKey,
+		persistentOpts: []RequestOption{},
 	}
 }
 
@@ -59,6 +66,9 @@ func NewWithConfig(config ClientConfig) OneAPIClient {
 	}
 	if config.BaseURL != "" {
 		c.baseURL = config.BaseURL
+	}
+	if len(config.PersistentOptions) > 0 {
+		c.persistentOpts = config.PersistentOptions
 	}
 	return c
 }
@@ -82,6 +92,12 @@ func (c OneAPIClient) doRequest(path string, opts ...RequestOption) (*http.Respo
 	if err != nil {
 		return nil, err
 	}
+	// apply persistent opts first
+	for _, f := range c.persistentOpts {
+		f(req)
+	}
+
+	// apply per-method opts
 	for _, f := range opts {
 		f(req)
 	}
