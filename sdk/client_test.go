@@ -112,6 +112,14 @@ func TestOneAPIClient_doRequest(t *testing.T) {
 		{"with match", args{path: "/character", opts: []RequestOption{WithFilterMatch("name", "frodo")}}, false, "/character?name=frodo", nil},
 		{"with match negate", args{path: "/character", opts: []RequestOption{WithFilterNegate("name", "frodo")}}, false, "/character?name!=frodo", nil},
 		{"with match negate and multiple", args{path: "/character", opts: []RequestOption{WithLimit(2), WithFilterNegate("name", "frodo")}}, false, "/character?limit=2&name!=frodo", nil},
+		{"with include", args{path: "/character", opts: []RequestOption{WithFilterInclude("race", "hobit,human")}}, false, "/character?name=hobit,human", nil},
+		{"with exclude", args{path: "/character", opts: []RequestOption{WithFilterExclude("race", "hobit,human")}}, false, "/character?name!=hobit,human", nil},
+		{"with regex include", args{path: "/character", opts: []RequestOption{WithRegexInclude("name", "/foot/i")}}, false, "/character?name=/foot/i", nil},
+		{"with regex exclude", args{path: "/character", opts: []RequestOption{WithRegexExclude("name", "/foot/i")}}, false, "/character?name!=/foot/i,human", nil},
+		{"with less than", args{path: "/movie", opts: []RequestOption{WithComparison("RuntimeInMinutes", "<", 180)}}, false, "/movie?RuntimeInMinutes<180", nil},
+		{"with greater than", args{path: "/movie", opts: []RequestOption{WithComparison("RuntimeInMinutes", ">", 180)}}, false, "/movie?RuntimeInMinutes>180", nil},
+		{"with greater than or equal", args{path: "/movie", opts: []RequestOption{WithComparison("RuntimeInMinutes", ">=", 180)}}, false, "/movie?RuntimeInMinutes>=180", nil},
+		{"with comparison and multiple ", args{path: "/movie", opts: []RequestOption{WithLimit(2), WithComparison("RuntimeInMinutes", ">=", 180)}}, false, "/movie?limit=2&RuntimeInMinutes>=180", nil},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -132,6 +140,8 @@ func TestOneAPIClient_doRequest(t *testing.T) {
 			}
 			assert.Nil(err)
 			assert.Contains(got.Request.URL.String(), tt.args.path)
+			// assert.Equal(tt.args.path, got.Request.URL.Path)
+			fmt.Println(got.Request.URL.String())
 
 			for k, v := range tt.wantHeader {
 				assert.Equal(v, got.Header.Get(k))

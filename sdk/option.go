@@ -3,6 +3,7 @@ package sdk
 import (
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 // RequestOption can be provided to API Calls to modify the request
@@ -24,6 +25,18 @@ func setQueryParam(req *http.Request, key string, val string) {
 func setNegateQueryParam(req *http.Request, key string, negateVal string) {
 	query := req.URL.RawQuery
 	negate := fmt.Sprintf("%s!=%s", key, negateVal)
+
+	if len(query) == 0 {
+		query = fmt.Sprintf("%s", negate)
+	} else {
+		query = fmt.Sprintf("%s&%s", query, negate)
+	}
+	req.URL.RawQuery = query
+
+}
+func setComparisonQueryParam(req *http.Request, key string, comp string, val int) {
+	query := req.URL.RawQuery
+	negate := fmt.Sprintf("%s%s%s", key, comp, fmt.Sprint(val))
 
 	if len(query) == 0 {
 		query = fmt.Sprintf("%s", negate)
@@ -90,13 +103,56 @@ func WithAPIKey(apiKey string) RequestOption {
 	}
 }
 
+// WithFilterMatch applies a filter to match resources with field = val
 func WithFilterMatch(field string, val string) RequestOption {
 	return func(req *http.Request) {
 		setQueryParam(req, field, val)
 	}
 }
+
+// WithFilterNegate applies a negation filter to exlude resources with field = val
 func WithFilterNegate(field string, val string) RequestOption {
 	return func(req *http.Request) {
 		setNegateQueryParam(req, field, val)
+	}
+}
+
+// WithFilterInclude applies a filter to include only resources with field matching one of vals
+func WithFilterInclude(field string, vals ...string) RequestOption {
+	return func(req *http.Request) {
+		val := strings.Join(vals, ",")
+		setQueryParam(req, field, val)
+	}
+}
+
+// WithFilterInclude applies a filter to exlude all resources with field matching one of vals
+func WithFilterExclude(field string, vals ...string) RequestOption {
+	return func(req *http.Request) {
+		val := strings.Join(vals, ",")
+		setNegateQueryParam(req, field, val)
+	}
+}
+
+// WithFilterRegex applies a filter to include only resources who's field's value matches the regex expression
+// Note that no validation is performed on the regex expression
+func WithRegexInclude(field string, expr string) RequestOption {
+	return func(req *http.Request) {
+		setQueryParam(req, field, expr)
+	}
+}
+
+// WithFilterInclude applies a filter to exlude all resources with field's value matching the regex expression
+func WithRegexExclude(field string, expr string) RequestOption {
+	return func(req *http.Request) {
+		setNegateQueryParam(req, field, expr)
+	}
+}
+
+// WithComparison applies a filter to match only resources with field's value matching the comparison operator
+// Acceptable comp arguments are "<", ">", and ">="
+// Note that the comparison operator is not valid
+func WithComparison(field string, comp string, val int) RequestOption {
+	return func(req *http.Request) {
+		setComparisonQueryParam(req, field, comp, val)
 	}
 }
