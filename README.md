@@ -1,6 +1,6 @@
 # The One API SDK
 
-Golang SDK for [The One API](https://the-one-api.dev/documentation#3)
+Golang SDK for [The One API](https://the-one-api.dev/documentation#3). GoDoc can be found [here](https://pkg.go.dev/github.com/treethought/cam-sweeney-sdk)
 
 ## Getting started
 
@@ -14,6 +14,19 @@ Obtain an APIKey from https://the-one-api.dev/sign-up and set the ONE_API_KEY en
 
 ```
 export ONE_API_KEY=<MY_API_KEY>
+```
+
+### Examples
+
+If you'd like to quickly try some exmaples, take a look at the [examples](./examples) directory.
+
+```
+# basic, does not require API key
+go run examples/basic/main.go
+
+# exmaple of filtering resources, requires API key
+go run examples/filtering/main.go
+
 ```
 
 ## Usage
@@ -215,3 +228,11 @@ Run the tests
 
 go test -v ./sdk/...
 ```
+
+## TODO
+
+- [] automatically handle pagination
+- [] provide configurable logging
+- [] automatically detect API key
+- [] provide methods on API schema structs for chained API calls
+- [] Unit tests for resource specific clients
