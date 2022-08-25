@@ -2,31 +2,12 @@ package sdk
 
 import "fmt"
 
-type Book struct {
-	ID   string `json:"_id,omitempty"`
-	Name string `json:"name,omitempty"`
-}
-
-type listBooksResponse struct {
-	APIResponse
-	Docs []Book
-}
-
 type paginatedResponse struct {
 	Total  int
 	Limit  int
 	Offset int
 	Page   int
 	Pages  int
-}
-
-type APIResponse struct {
-	APIError
-	paginatedResponse
-}
-
-func (r APIResponse) IsError() error {
-	return r.APIError
 }
 
 type APIError struct {

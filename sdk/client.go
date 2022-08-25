@@ -43,7 +43,7 @@ func (c OneAPIClient) doRequest(path string, opts ...RequestOption) (*http.Respo
 		f(req)
 	}
 
-	resp, err := c.client.Get(endpoint)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return resp, err
 	}
@@ -56,16 +56,15 @@ func (c OneAPIClient) doRequestInto(path string, v interface{}, opts ...RequestO
 		return err
 	}
 
-	// use TeeReader to allow reading into
-	// response and error structs
-	// TODO: simplify this, by alowing error info in response structs
-
-	// unmarshal to map first, so we can check for error
-	// TODO: make this more efficient to duplicate body
-	apiErr := APIError{}
-
 	var bodyCopy bytes.Buffer
 	r := io.TeeReader(resp.Body, &bodyCopy)
+
+	// use TeeReader to allow reading into
+	// response and error structs
+	// TODO: maybe simplify this, and be more efficient
+	// by allowing error info in response structs
+
+	apiErr := APIError{}
 
 	data, err := ioutil.ReadAll(r)
 	if err != nil {
@@ -85,22 +84,10 @@ func (c OneAPIClient) doRequestInto(path string, v interface{}, opts ...RequestO
 	return nil
 }
 
-// ListBooks returns a list of all "Lord of the Rings" books
-func (c OneAPIClient) ListBooks() ([]Book, error) {
-	resp := listBooksResponse{}
-	err := c.doRequestInto("/book", &resp)
-	if err != nil {
-		return nil, err
-	}
-	return resp.Docs, err
+func (c OneAPIClient) Books() BooksClient {
+	return BooksClient{c: c}
 }
 
-func (c OneAPIClient) GetBook(id string) (Book, error) {
-	path := fmt.Sprintf("/book/%s", id)
-	resp := listBooksResponse{}
-	err := c.doRequestInto(path, &resp)
-	if err != nil {
-		return Book{}, err
-	}
-	return resp.Docs[0], err
+func (c OneAPIClient) Movies() MoviesClient {
+	return MoviesClient{c: c}
 }
