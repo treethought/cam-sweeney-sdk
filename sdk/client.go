@@ -10,26 +10,53 @@ import (
 	"strings"
 )
 
-const BASE_URL = "https://the-one-api.dev/v2"
+const DEFAULT_BASE_URL = "https://the-one-api.dev/v2"
 
 type OneAPIClient struct {
-	client *http.Client
-	apiKey string
+	client  *http.Client
+	apiKey  string
+	baseURL string
+}
+
+type ClientConfig struct {
+	Client  *http.Client
+	BaseURL string
+	ApiKey  string
+}
+
+func NewReadOnly() OneAPIClient {
+	return OneAPIClient{
+		client:  http.DefaultClient,
+		baseURL: DEFAULT_BASE_URL,
+	}
 }
 
 func New(apiKey string) OneAPIClient {
 	return OneAPIClient{
-		client: http.DefaultClient,
-		apiKey: apiKey,
+		client:  http.DefaultClient,
+		baseURL: DEFAULT_BASE_URL,
+		apiKey:  apiKey,
 	}
 }
 
-func (c OneAPIClient) authHeaderValue() string {
-	return fmt.Sprintf("Bearer: %s", c.apiKey)
+func NewWithConfig(config ClientConfig) OneAPIClient {
+	var c OneAPIClient
+	if config.ApiKey == "" {
+		c = NewReadOnly()
+	} else {
+		c = New(config.ApiKey)
+	}
+	if config.Client != nil {
+		c.client = config.Client
+	}
+	if config.BaseURL != "" {
+		c.baseURL = config.BaseURL
+	}
+	return c
 }
 
 func (c OneAPIClient) buildEndpoint(path string) string {
-	return fmt.Sprintf("%s/%s", BASE_URL, strings.Trim(path, "/"))
+	return fmt.Sprintf("%s/%s", c.baseURL, strings.Trim(path, "/"))
 }
 
 func (c OneAPIClient) doRequest(path string, opts ...RequestOption) (*http.Response, error) {
