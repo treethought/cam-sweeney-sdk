@@ -3,12 +3,14 @@ package sdk
 import "fmt"
 
 type chapterResponse struct {
+	paginatedResponse
 	Docs []Chapter
 }
 
 type Chapter struct {
-	ID   string `json:"_id,omitempty"`
+	ID   string `json:"id,omitempty"`
 	Name string `json:"chapterName,omitempty"`
+	Book string `json:"book,omitempty"`
 }
 
 type ChapterClient struct {

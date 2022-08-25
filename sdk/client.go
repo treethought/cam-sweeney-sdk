@@ -120,3 +120,12 @@ func (c OneAPIClient) Books() BooksClient {
 func (c OneAPIClient) Movies() MoviesClient {
 	return MoviesClient{c: c}
 }
+func (c OneAPIClient) Characters() CharactersClient {
+	return CharactersClient{c: c}
+}
+func (c OneAPIClient) Quotes() QuotesClient {
+	return QuotesClient{c: c}
+}
+func (c OneAPIClient) Chapters() ChapterClient {
+	return ChapterClient{c: c}
+}

@@ -3,6 +3,7 @@ package sdk
 import "fmt"
 
 type quoteResponse struct {
+	paginatedResponse
 	Docs []Quote
 }
 
